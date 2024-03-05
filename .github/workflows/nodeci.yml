@@ -69,7 +69,7 @@ jobs:
 
 
     - name: Run Docker container
-      run: docker run -d --name my-node-app  shivang1012/node-hello 
+      run: docker run -d --name my-node-app -p 127.0.0.1:7050:7050   shivang1012/node-hello 
 
     - name: Check if container is running
       id: check_container
