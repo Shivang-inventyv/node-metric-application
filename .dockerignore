@@ -29,5 +29,6 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 **/dist
+Jenkinsfile
 LICENSE
 README.md

@@ -63,6 +63,24 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "build/index.html"));
 });
 
+// Heath check route
+app.get("/health-check", (req, res) => {
+
+    const health_check = {
+        uptime: process.uptime(),
+        message: "OK",
+        timestamp: Date.now()
+    }
+
+    try {
+        res.send(health_check);
+    } catch (error) {
+        health_check.message = error;
+        res.status(503).send();
+    }
+
+})
+
 // Exposing the metrics 
 app.get("/metrics", async (req, res) => {
     res.setHeader("Content-Type", client.register.contentType);
