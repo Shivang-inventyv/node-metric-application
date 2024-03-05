@@ -92,7 +92,7 @@ app.get("/metrics", async (req, res) => {
 const router = require("./routes");
 app.use("/api", router);
 
-const port = process.env.PORT;
+const port = process.env.PORT | 7050;
 
 async function startServer() {
     await connectToMongoDB();
