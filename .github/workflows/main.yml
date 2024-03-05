@@ -64,8 +64,16 @@ jobs:
         run: | 
           docker buildx build --platform linux/amd64,linux/arm64 -t ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --file Dockerfile .
 
-      - name: Run container for health check
-        run: docker run --rm ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} curl -f http://localhost:7050/health-check  # Replace PORT with your actual health check port
-
+      # - name: Run container for health check
+      #   run: docker run --rm ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} curl -f http://localhost:7050/health-check  # Replace PORT with your actual health check port
+      - name: Health Check
+        run: |
+          response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://127.0.0.1:7050/health-check)
+          if [ "$response" -ne 200 ]; then
+            echo "Health check failed with status $response"
+            exit 1
+          fi
+          echo "Health check passed with status $response"
+          
       - name: Push Docker image to registry
         run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
