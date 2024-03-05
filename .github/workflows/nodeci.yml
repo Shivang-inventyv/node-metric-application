@@ -84,6 +84,8 @@ jobs:
             echo "Container is not running"
             exit 1
           fi
+    - name: log
+      run: docker logs my-node-app
 
     - name: Health Check
       run: |
