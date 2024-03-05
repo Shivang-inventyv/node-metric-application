@@ -1,0 +1,47 @@
+name: Build, Check and then push the image
+
+on:
+  workflow_dispatch:
+    inputs:
+      run-workflow:
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+     
+env:
+   DOCKER_USERNAME: ${{ fromJson(secrets.NEW_SECRET).docker_username }}
+   DOCKER_PASSWORD: ${{ fromJson(secrets.NEW_SECRET).docker_secret_token }}
+   IMAGE_NAME: adv-backend-metrics-application
+   IMAGE_TAG: latest
+   
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Check input and run if true
+        if: ${{ github.event.inputs.run-workflow == 'true' }}
+        run: |
+          echo "Workflow is running."
+          
+      - name: Check input and exit if false
+        if: ${{ github.event.inputs.run-workflow == 'false' }}
+        run: exit 1  # Exit the entire workflow with a non-zero code
+          
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
+
+      - name: Build Docker image
+        run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+
+      - name: Run container for health check
+        run: docker run --rm $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG curl -f http://localhost:7050/health-check  # Replace PORT with your actual health check port
+
+      - name: Push Docker image to registry
+        run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
