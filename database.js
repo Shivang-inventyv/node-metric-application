@@ -12,7 +12,7 @@ const options = {
 };
 
 let client;
-const connectToMongoDB = async () => {
+const connectToMongoDB = async (uri) => {
     if (!client) {
         try {
             client = await MongoClient.connect(uri, options);
