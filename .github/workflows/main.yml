@@ -10,8 +10,8 @@ on:
           - 'false'
      
 env:
-   DOCKER_USERNAME: ${{ fromJson(secrets.NEW_SECRET).docker_username }}
-   DOCKER_PASSWORD: ${{ fromJson(secrets.NEW_SECRET).docker_secret_token }}
+   DOCKER_USERNAME: ${{ fromJson(secrets.DOCKER_SECRET).docker_username }}
+   DOCKER_PASSWORD: ${{ fromJson(secrets.DOCKER_SECRET).docker_secret_token }}
    IMAGE_NAME: adv-backend-metrics-application
    IMAGE_TAG: latest
    
