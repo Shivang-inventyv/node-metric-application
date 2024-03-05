@@ -1,0 +1,161 @@
+# This workflow will do a clean installation of Node.js dependencies, cache/restore them, build the source code, and run tests across different versions of Node.js
+# For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI for Node.js
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+# on:
+#  workflow_dispatch:
+#  #    inputs:
+#       # firstName:
+#       #  description: enter your first name
+#       #  type: string
+#       #  required: true
+#       # choice:
+#       #   description: 'Select an option'
+#       #   required: true
+#       #   type: choice
+#       #   options:
+#       #     - Option 1
+#       #     - Option 2
+#       #     - Option 3
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    # environment: "prod"
+    
+    strategy:
+      matrix:
+        node-version: ['16.x']
+     
+    steps:
+
+    
+    # - name: greeting to user
+    #   run: |
+    #    echo " Good Morning  ${{ github.event.inputs.firstName}} !"
+    #    echo " Good Morning  ${{ github.event.inputs.choice}} !"
+    
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # - name: Checkout Repository 1
+    #   uses: actions/checkout@v2
+    #   with:
+    #     repository: Shivang-inventyv/cicd 
+    #     ref: main  
+
+    # - name: Execute Script
+    #   run: sh script.sh  # Replace with the name of your script file
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Docker Image
+      run: docker build -t shivang1012/node-hello .
+
+
+    - name: Run Docker container
+      run: docker run -d --name my-node-app  shivang1012/node-hello 
+
+    - name: Check if container is running
+      id: check_container
+      run: |
+          if [ "$(docker inspect -f '{{.State.Running}}' my-node-app)" = "true" ]; then
+            echo "Container is running"
+            exit 0
+          else
+            echo "Container is not running"
+            exit 1
+          fi
+
+    - name: Health Check
+      run: |
+          response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://127.0.0.1:7050/health-check)
+          if [ "$response" -ne 200 ]; then
+            echo "Health check failed with status $response"
+            exit 1
+          fi
+          echo "Health check passed with status $response"
+    
+ 
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_ACCESS_TOKEN}}
+
+    - name: Push Docker Image to Docker Hub
+      run: docker push shivang1012/node-hello
+
+    # - name: Get SHA Digest
+    #   run: |
+    #     SHA_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' shivang1012/node-hello)
+    #     echo "SHA Digest: $SHA_DIGEST"
+    #     echo "$SHA_DIGEST" > $GITHUB_WORKSPACE/sha_digest.txt
+    
+    # - name: Get SHA Digest
+    #   run: |
+    #       SHA_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' shivang1012/node-hello)
+    #       echo "SHA Digest: $SHA_DIGEST"
+    #       echo "$SHA_DIGEST" > $GITHUB_WORKSPACE/sha_digest.txt
+          
+    # - name: Commit SHA Digest File
+    #   run: |
+    #     git config --global user.email "shivangpithadiya1012@gmail.com"
+    #     git config --global user.name "ShivangPithadiya"
+    #     git pull
+    #     git add $GITHUB_WORKSPACE/sha_digest.txt
+    #     git commit -m "Add SHA Digest file"
+    #     git push
+    
+
+    # - name: Create Artifact of SHA Digest File
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: sha_digestttt
+    #     path: ./sha_digest.txt
+    
+    # - name: Create artifacts folder (if missing)
+    #   run: |
+    #     mkdir -p ./artifacts
+
+    # - name: Download SHA Digest Artifact
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #       name: sha_digestttt
+    #       path: ./artifacts
+
+
+    # - name: Debug directory contents
+    #   run: |
+    #       ls -al ./artifacts
+    #       pwd
+          
+
+    # - name: Commit and Push Artifact
+    #   run: |
+    #     pwd
+    #     git add ./  # Correct the filename if different
+    #     git commit -m "Add artifact from workflow"
+    #     git push
+        
+    # - name: debug
+    #   run: |
+    #     ls -al
+    #     pwd
+    # - name: Run container
+    #   run:  docker build --build-arg MY_VARIABLE="${{ env.MY_VARIABLE }}" -t raj456/nodeci:latest .
