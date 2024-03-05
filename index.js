@@ -10,15 +10,15 @@ const responseTime = require("response-time");
 
 // const LokiTransport = require("winston-loki");
 const options = {
-  transports: [
-    new (winston.transports.Console)(),
-    // new LokiTransport({
-    //   host: process.env.LOKI_URL,
-    //   labels: {
-    //     appName: "express-application"
-    //   }
-    // })
-  ]
+    transports: [
+        new (winston.transports.Console)(),
+        // new LokiTransport({
+        //   host: process.env.LOKI_URL,
+        //   labels: {
+        //     appName: "express-application"
+        //   }
+        // })
+    ]
 };
 
 const logger = winston.createLogger(options);
@@ -95,7 +95,21 @@ app.use("/api", router);
 const port = process.env.PORT | 7050;
 
 async function startServer() {
-    await connectToMongoDB();
+
+    const uri = process.env.MONGODB_URI;
+
+    if (uri) {
+        try {
+            await connectToMongoDB(uri);
+            console.log('Connected to MongoDB successfully!');
+        } catch (error) {
+            console.error('Error connecting to MongoDB:', error.message);
+            // Handle database connection errors gracefully (optional)
+        }
+    } else {
+        console.warn('MongoDB URL not provided. Server starting without database connection.');
+    }
+
     app.listen(port, () => {
         console.log(`Server is listening on http://localhost:${port}`);
     });
