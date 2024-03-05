@@ -68,4 +68,4 @@ jobs:
         run: docker run --rm ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} curl -f http://localhost:7050/health-check  # Replace PORT with your actual health check port
 
       - name: Push Docker image to registry
-        run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE
+        run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
