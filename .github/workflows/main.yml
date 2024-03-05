@@ -41,6 +41,7 @@ jobs:
       - name: Build Docker image
         run: | 
           sudo apt update -y
+          sudo apt install docker.io -y
           sudo apt install docker-buildx -y
           docker build -t ${{ env.DOCKER_USERNAME }}/{{ env.IMAGE_NAME }}:{{ env.IMAGE_TAG }} .
 
