@@ -70,9 +70,16 @@ jobs:
     - name: Set up Trivy
       uses: aquasecurity/trivy-action@master
 
-    - name: Scan Docker image
-      run: |
-          trivy image shivang1012/node-hello:latest --format table  --vuln-type os,library --severity LOW,MEDIUM,HIGH,CRITICAL
+    - name: Use Trivy action (official Aqua Security action)
+      uses: aquasecurity/trivy-action@master  # Adjust version as needed
+      with:
+        image-ref: shivang1012/node-hello
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+       
 
 
     # - name: Run Docker container
