@@ -85,6 +85,19 @@ jobs:
         name: trivy-scan-results
         path: ./trivy_report.txt  # Path to the Trivy report file
         if-no-files-found: error
+
+    - name: Send artifact via email
+      uses: dawidd6/action-send-mail@v3
+      with:
+        from: panchalharsh4217@gmail.com
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: panchalharsh4217@gmail.com
+        password: lurt bivm qmqp guxa
+        subject: "Trivy Scan Results"
+        to: ppipaliya23@gmail.com
+        body: "Please find the attached Trivy scan results."
+        attachments: ./trivy-report.txt
    
 
 
