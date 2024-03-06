@@ -77,12 +77,14 @@ jobs:
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
+        output: 'trivy_report.txt'
 
-    - name: Save Trivy scan results as artifact
+    - name: Upload Trivy Report Artifact
       uses: actions/upload-artifact@v3
       with:
         name: trivy-scan-results
-        path: ${{ github.workspace }}/trivy_report.txt
+        path: ./trivy_report.txt  # Path to the Trivy report file
+        if-no-files-found: error
    
 
 
