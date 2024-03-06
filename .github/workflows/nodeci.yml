@@ -72,7 +72,7 @@ jobs:
 
     - name: Scan Docker image
       run: |
-          trivy image shivang1012/node-hello:latest --format table --severity LOW,MEDIUM,HIGH,CRITICAL
+          trivy image shivang1012/node-hello:latest --format table  --vuln-type os,library --severity LOW,MEDIUM,HIGH,CRITICAL
 
 
     # - name: Run Docker container
