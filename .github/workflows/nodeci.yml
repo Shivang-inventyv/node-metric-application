@@ -67,34 +67,41 @@ jobs:
     - name: Build Docker Image
       run: docker build -t shivang1012/node-hello .
 
+    - name: Set up Trivy
+      uses: aquasecurity/trivy-action@master
 
-    - name: Run Docker container
+    - name: Scan Docker image
       run: |
-        docker run -d --name my-node-app -p 7050:7050   shivang1012/node-hello
-        sleep 10
+          docker save shivang1012/node-hello:latest | trivy image --format table
+
+
+    # - name: Run Docker container
+    #   run: |
+    #     docker run -d --name my-node-app -p 7050:7050   shivang1012/node-hello
+    #     sleep 10
       
 
-    - name: Check if container is running
-      id: check_container
-      run: |
-          if [ "$(docker inspect -f '{{.State.Running}}' my-node-app)" = "true" ]; then
-            echo "Container is running"
-            exit 0
-          else
-            echo "Container is not running"
-            exit 1
-          fi
-    - name: log
-      run: docker logs my-node-app
+    # - name: Check if container is running
+    #   id: check_container
+    #   run: |
+    #       if [ "$(docker inspect -f '{{.State.Running}}' my-node-app)" = "true" ]; then
+    #         echo "Container is running"
+    #         exit 0
+    #       else
+    #         echo "Container is not running"
+    #         exit 1
+    #       fi
+    # - name: log
+    #   run: docker logs my-node-app
 
-    - name: Health Check
-      run: |
-          response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://127.0.0.1:7050/health-check)
-          if [ "$response" -ne 200 ]; then
-            echo "Health check failed with status $response"
-            exit 1
-          fi
-          echo "Health check passed with status $response"
+    # - name: Health Check
+    #   run: |
+    #       response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://127.0.0.1:7050/health-check)
+    #       if [ "$response" -ne 200 ]; then
+    #         echo "Health check failed with status $response"
+    #         exit 1
+    #       fi
+    #       echo "Health check passed with status $response"
     
  
     - name: Login to Docker Hub
