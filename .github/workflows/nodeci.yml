@@ -67,8 +67,6 @@ jobs:
     - name: Build Docker Image
       run: docker build -t shivang1012/node-hello .
 
-    - name: Set up Trivy
-      uses: aquasecurity/trivy-action@master
 
     - name: Use Trivy action (official Aqua Security action)
       uses: aquasecurity/trivy-action@master  # Adjust version as needed
